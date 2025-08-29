@@ -53,6 +53,8 @@ clients - клиенты (id, full_name, birth_date)
 
 loans - займы (id, client_id, book_id, loan_date, returned)
 
+*Особенности: для ускорения работы с большими данными используются индексы
+
 
 ### Предварительные требования
 
