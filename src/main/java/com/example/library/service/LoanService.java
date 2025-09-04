@@ -1,5 +1,6 @@
 package com.example.library.service;
 
+import com.example.library.dto.ActiveReaderDto;
 import com.example.library.model.Book;
 import com.example.library.model.Client;
 import com.example.library.model.Loan;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.HashMap;
+import com.example.library.mapper.LoanMapper;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,10 +33,6 @@ public class LoanService {
 
     public List<Loan> getAllLoans() {
         return loanRepository.findAllWithClientAndBook();
-    }
-
-    public Loan saveLoan(Loan loan) {
-        return loanRepository.save(loan);
     }
 
     public void deleteLoan(Long id) {
@@ -76,23 +73,13 @@ public class LoanService {
         return loanRepository.save(loan);
     }
 
-    public List<Map<String, Object>> getActiveReadersData() {
+    public List<ActiveReaderDto> getActiveReadersData() {
         List<Loan> activeLoans = getActiveLoans();
 
         return activeLoans.stream()
-                .map(this::convertLoanToMap)
+                .map(LoanMapper::convertLoanToDto)
                 .collect(Collectors.toList());
     }
 
-    private Map<String, Object> convertLoanToMap(Loan loan) {
-        Map<String, Object> readerInfo = new HashMap<>();
-        readerInfo.put("fullName", loan.getClient().getFullName());
-        readerInfo.put("birthDate", loan.getClient().getBirthDate());
-        readerInfo.put("bookTitle", loan.getBook().getTitle());
-        readerInfo.put("bookAuthor", loan.getBook().getAuthor());
-        readerInfo.put("bookIsbn", loan.getBook().getIsbn());
-        readerInfo.put("loanDate", loan.getLoanDate());
-        return readerInfo;
-    }
 
 }

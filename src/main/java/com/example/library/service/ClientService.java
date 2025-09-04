@@ -31,10 +31,6 @@ public class ClientService {
         return clientRepository.findAll();
     }
 
-    public Page<Client> getAllClients(Pageable pageable) {
-        return clientRepository.findAll(pageable);
-    }
-
     public Optional<Client> getClientById(Long id) {
         return clientRepository.findById(id);
     }
@@ -45,10 +41,6 @@ public class ClientService {
 
     public void deleteClient(Long id) {
         clientRepository.deleteById(id);
-    }
-
-    public Page<Client> searchClients(String query, Pageable pageable) {
-        return clientRepository.searchClients(query, pageable);
     }
 
     public ClientSearchResult searchClients(String query, int page, int size) {

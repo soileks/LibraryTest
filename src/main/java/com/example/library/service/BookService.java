@@ -32,32 +32,12 @@ public class BookService {
         return bookRepository.findAll();
     }
 
-    public Page<Book> getAllBooks(Pageable pageable) {
-        return bookRepository.findAll(pageable);
-    }
-
     public Optional<Book> getBookById(Long id) {
         return bookRepository.findById(id);
     }
 
-    public Book saveBook(Book book) {
-        return bookRepository.save(book);
-    }
-
     public void deleteBook(Long id) {
         bookRepository.deleteById(id);
-    }
-
-    public boolean existsByIsbn(String isbn) {
-        return bookRepository.existsByIsbn(isbn);
-    }
-
-    public Page<Book> searchBooks(String query, Pageable pageable) {
-        return bookRepository.searchBooks(query, pageable);
-    }
-
-    public boolean existsByIsbnAndIdNot(String isbn, Long id) {
-        return bookRepository.existsByIsbnAndIdNot(isbn, id);
     }
 
     public BookSearchResult searchBooks(String query, int page, int size) {

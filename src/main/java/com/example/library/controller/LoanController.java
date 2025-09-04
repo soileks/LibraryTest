@@ -1,6 +1,7 @@
 package com.example.library.controller;
 
 
+import com.example.library.dto.ActiveReaderDto;
 import com.example.library.model.Loan;
 
 import com.example.library.service.LoanService;
@@ -65,8 +66,8 @@ public class LoanController {
 
     @GetMapping("/active-readers")
     @ResponseBody
-    public ResponseEntity<List<Map<String, Object>>> getActiveReaders() {
-        List<Map<String, Object>> result = loanService.getActiveReadersData();
+    public ResponseEntity<List<ActiveReaderDto>> getActiveReaders() {
+        List<ActiveReaderDto> result = loanService.getActiveReadersData();
         return ResponseEntity.ok(result);
     }
 }
