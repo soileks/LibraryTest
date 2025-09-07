@@ -9,7 +9,9 @@
 <body>
 <div class="container">
     <h1>👥 <span class="text-gradient">Active Readers Report</span></h1>
-
+    <div class="navigation">
+        <a th:href="@{/loans}" class="btn btn-secondary">← Back to Loans</a>
+    </div>
     <div class="content-section">
         <div th:if="${#lists.isEmpty(activeReaders)}" class="alert alert-info">
             📝 No active readers found.

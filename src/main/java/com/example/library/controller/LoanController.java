@@ -116,14 +116,14 @@ public class LoanController {
         return "redirect:/loans";
     }
 
-    @GetMapping("/json/active-readers")
+    @GetMapping("/active-readers")
     @ResponseBody
     public ResponseEntity<List<ActiveReaderDto>> getActiveReaders() {
         List<ActiveReaderDto> result = loanService.getActiveReadersData();
         return ResponseEntity.ok(result);
     }
 
-    @GetMapping("/active-readers")
+    @GetMapping("/active-readers-report")
     public String activeReadersReport(Model model) {
         List<ActiveReaderDto> activeReaders = loanService.getActiveReadersData();
         model.addAttribute("activeReaders", activeReaders);
