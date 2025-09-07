@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
@@ -22,22 +24,56 @@
         <a th:href="@{/loans}" class="btn btn-primary">📖 Loans</a>
     </div>
 
+    <div class="search-box">
+        <form th:action="@{/loans}" method="get" class="form-inline">
+            <select name="searchType" class="form-control">
+                <option value="all">All Fields</option>
+                <option value="client" th:selected="${searchType == 'client'}">Client Name</option>
+                <option value="bookTitle" th:selected="${searchType == 'bookTitle'}">Book Title</option>
+                <option value="bookAuthor" th:selected="${searchType == 'bookAuthor'}">Book Author</option>
+                <option value="isbn" th:selected="${searchType == 'isbn'}">ISBN</option>
+                <option value="loanDate" th:selected="${searchType == 'loanDate'}">Loan Date</option>
+                <option value="status" th:selected="${searchType == 'status'}">Status</option>
+            </select>
+            <input type="text" name="search" th:value="${searchQuery}"
+                   placeholder="Search loans..." class="form-control">
+            <input type="hidden" name="size" th:value="${loanPage.size}">
+            <button type="submit" class="btn btn-primary">🔍 Search</button>
+            <a th:href="@{/loans}" th:if="${searchQuery}" class="btn btn-secondary">❌ Clear</a>
+        </form>
+    </div>
+
     <div class="add-button-container">
         <a th:href="@{/loans/new}" class="btn btn-primary">📝 New Loan</a>
+        <a th:href="@{/loans/active-readers}" class="btn btn-success" target="_blank">👥 Active Readers Report</a>
     </div>
 
     <div class="content-section">
         <div th:if="${#lists.isEmpty(loans)}" class="alert alert-info">
-            📝 No loans found. <a th:href="@{/loans/new}">Create the first loan</a>
+            <span th:if="${searchQuery != null and !searchQuery.isEmpty()}">
+                📝 No loans found for "<strong th:text="${searchQuery}"></strong>".
+                <a th:href="@{/loans}">Show all loans</a>
+            </span>
+            <span th:unless="${searchQuery != null and !searchQuery.isEmpty()}">
+                📝 No loans found. <a th:href="@{/loans/new}">Create the first loan</a>
+            </span>
         </div>
 
         <div th:unless="${#lists.isEmpty(loans)}">
+            <!-- Информация о результатах поиска -->
+            <div th:if="${searchQuery != null and !searchQuery.isEmpty()}" class="alert alert-info">
+                🔍 Found <strong th:text="${loans.size()}"></strong> loans for: "<strong
+                    th:text="${searchQuery}"></strong>"
+                <a th:href="@{/loans}" class="btn btn-secondary btn-sm">Show All Loans</a>
+            </div>
+
             <table class="table">
                 <thead>
                 <tr>
                     <th>ID</th>
                     <th>Client</th>
                     <th>Book</th>
+                    <th>Author</th>
                     <th>ISBN</th>
                     <th>Loan Date</th>
                     <th>Status</th>
@@ -49,6 +85,7 @@
                     <td th:text="${loan.id}"></td>
                     <td th:text="${loan.client.fullName}"></td>
                     <td th:text="${loan.book.title}"></td>
+                    <td th:text="${loan.book.author}"></td>
                     <td th:text="${loan.book.isbn}"></td>
                     <td th:text="${#temporals.format(loan.loanDate, 'yyyy-MM-dd')}"></td>
                     <td>
@@ -58,15 +95,24 @@
                     <td>
                         <a th:if="${not loan.returned}"
                            th:href="@{/loans/return/{id}(id=${loan.id})}"
-                           class="btn btn-success"
+                           class="btn btn-success btn-sm"
                            onclick="return confirm('Mark this book as returned?')">↩️ Return</a>
                         <a th:href="@{/loans/delete/{id}(id=${loan.id})}"
-                           class="btn btn-danger"
+                           class="btn btn-danger btn-sm"
                            onclick="return confirm('Are you sure you want to delete this loan record?')">🗑️ Delete</a>
                     </td>
                 </tr>
                 </tbody>
             </table>
+            <div th:if="${loanPage.totalPages > 1}" class="pagination">
+    <span th:each="pageNumber : ${pageNumbers}">
+        <a th:if="${pageNumber != loanPage.number + 1}"
+           th:href="@{/loans(page=${pageNumber}, size=${loanPage.size}, search=${searchQuery})}"
+           th:text="${pageNumber}"></a>
+        <span th:unless="${pageNumber != loanPage.number + 1}"
+              th:text="${pageNumber}" class="current"></span>
+    </span>
+            </div>
         </div>
     </div>
 </div>

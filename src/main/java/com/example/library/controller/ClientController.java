@@ -14,8 +14,6 @@ import javax.validation.Valid;
 
 import java.util.Optional;
 
-
-
 @Controller
 @RequestMapping("/clients")
 public class ClientController {
@@ -32,17 +30,20 @@ public class ClientController {
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size,
             @RequestParam("search") Optional<String> search,
+            @RequestParam("searchType") Optional<String> searchType,
             Model model) {
 
         int currentPage = page.orElse(1);
         int pageSize = size.orElse(10);
         String searchQuery = search.orElse("");
+        String searchTypeValue = searchType.orElse("all");
 
-        ClientSearchResult result = clientService.searchClients(searchQuery, currentPage, pageSize);
+        ClientSearchResult result = clientService.searchClients(searchQuery, searchTypeValue, currentPage, pageSize);
 
         model.addAttribute("clients", result.getClients());
         model.addAttribute("clientPage", result.getClientPage());
         model.addAttribute("searchQuery", result.getSearchQuery());
+        model.addAttribute("searchType", searchTypeValue);
         model.addAttribute("pageNumbers", result.getPageNumbers());
 
         return "clients";
@@ -55,8 +56,8 @@ public class ClientController {
     }
 
     @PostMapping("/save")
-    public String saveClient(@Valid @ModelAttribute Client client, BindingResult result) {
-        if (result.hasErrors()) {
+    public String saveClient(@Valid @ModelAttribute Client client, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
             return "client-form";
         }
 

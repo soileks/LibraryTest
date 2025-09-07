@@ -16,6 +16,7 @@
         </div>
 
         <form th:action="@{/clients/save}" th:object="${client}" method="post" class="form">
+
             <input type="hidden" th:field="*{id}" />
 
             <div class="form-group">
@@ -42,8 +43,10 @@
                 </button>
                 <a th:href="@{/clients}" class="btn btn-secondary">❌ Cancel</a>
             </div>
+
         </form>
     </div>
 </div>
+
 </body>
 </html>

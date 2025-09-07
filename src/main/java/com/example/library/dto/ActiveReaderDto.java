@@ -54,4 +54,27 @@ public class ActiveReaderDto {
         this.loanDate = loanDate;
     }
 
+    public String getFullName() {
+        return fullName;
+    }
+
+    public LocalDate getBirthDate() {
+        return birthDate;
+    }
+
+    public String getBookTitle() {
+        return bookTitle;
+    }
+
+    public String getBookAuthor() {
+        return bookAuthor;
+    }
+
+    public String getBookIsbn() {
+        return bookIsbn;
+    }
+
+    public LocalDate getLoanDate() {
+        return loanDate;
+    }
 }

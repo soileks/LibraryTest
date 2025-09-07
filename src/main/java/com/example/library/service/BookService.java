@@ -28,9 +28,6 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
-    }
 
     public Optional<Book> getBookById(Long id) {
         return bookRepository.findById(id);
@@ -40,17 +37,30 @@ public class BookService {
         bookRepository.deleteById(id);
     }
 
-    public BookSearchResult searchBooks(String query, int page, int size) {
+    public BookSearchResult searchBooks(String query, String searchType, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Book> bookPage;
 
-        if (!query.isEmpty()) {
-            bookPage = bookRepository.searchBooks(query, pageable);
+        if (query != null && !query.trim().isEmpty()) {
+            switch (searchType != null ? searchType : "all") {
+                case "title":
+                    bookPage = bookRepository.findByTitle(query, pageable);
+                    break;
+                case "author":
+                    bookPage = bookRepository.findByAuthor(query, pageable);
+                    break;
+                case "isbn":
+                    bookPage = bookRepository.findByIsbn(query, pageable);
+                    break;
+                case "all":
+                default:
+                    bookPage = bookRepository.searchBooks(query, pageable);
+                    break;
+            }
         } else {
             bookPage = bookRepository.findAll(pageable);
         }
 
-        // Генерация номеров страниц
         List<Integer> pageNumbers = Collections.emptyList();
         int totalPages = bookPage.getTotalPages();
         if (totalPages > 0) {

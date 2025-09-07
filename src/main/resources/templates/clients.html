@@ -18,8 +18,14 @@
 
     <div class="search-box">
         <form th:action="@{/clients}" method="get" class="form-inline">
+            <select name="searchType" class="form-control">
+                <option value="all">All Fields</option>
+                <option value="name" th:selected="${searchType == 'name'}">Name</option>
+                <option value="birthDate" th:selected="${searchType == 'birthDate'}">Birth Date</option>
+            </select>
             <input type="text" name="search" th:value="${searchQuery}"
-                   placeholder="Search by name..." class="form-control">
+                   placeholder="Search clients..." class="form-control">
+            <input type="hidden" name="size" th:value="${clientPage.size}">
             <button type="submit" class="btn btn-primary">🔍 Search</button>
             <a th:href="@{/clients}" th:if="${searchQuery}" class="btn btn-secondary">❌ Clear</a>
         </form>

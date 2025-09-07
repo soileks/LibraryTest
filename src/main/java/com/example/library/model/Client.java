@@ -1,11 +1,12 @@
 package com.example.library.model;
 
+import com.example.library.annotation.ValidAge;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 import java.time.LocalDate;
+
 
 @Entity
 @Table(name = "clients", indexes = {
@@ -19,10 +20,14 @@ public class Client {
 
     @NotBlank(message = "Full name is required")
     @Column(nullable = false, length = 200)
+    @Pattern(regexp = "^[\\p{L} \\-'’.]+$",
+            message = "Full name can only contain letters, spaces, hyphens, and apostrophes")
     private String fullName;
 
     @NotNull(message = "Birth date is required")
+    @Past(message = "Birth date must be in the past")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @ValidAge(message = "Age must be between 5 and 120 years")
     @Column(nullable = false)
     private LocalDate birthDate;
 

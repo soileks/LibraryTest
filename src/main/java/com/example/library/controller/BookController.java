@@ -32,17 +32,20 @@ public class BookController {
             @RequestParam("page") Optional<Integer> page,
             @RequestParam("size") Optional<Integer> size,
             @RequestParam("search") Optional<String> search,
+            @RequestParam("searchType") Optional<String> searchType, // Новый параметр
             Model model) {
 
         int currentPage = page.orElse(1);
-        int pageSize = size.orElse(5);
+        int pageSize = size.orElse(10);
         String searchQuery = search.orElse("");
+        String searchTypeValue = searchType.orElse("all"); // По умолчанию "all"
 
-        BookSearchResult result = bookService.searchBooks(searchQuery, currentPage, pageSize);
+        BookSearchResult result = bookService.searchBooks(searchQuery, searchTypeValue, currentPage, pageSize);
 
         model.addAttribute("books", result.getBooks());
         model.addAttribute("bookPage", result.getBookPage());
         model.addAttribute("searchQuery", result.getSearchQuery());
+        model.addAttribute("searchType", searchTypeValue); // Передаем тип поиска в шаблон
         model.addAttribute("pageNumbers", result.getPageNumbers());
 
         return "books";

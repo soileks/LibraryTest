@@ -6,8 +6,8 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "loans", indexes = {
-        @Index(name = "idx_loan_date", columnList = "loanDate"),
-        @Index(name = "idx_client_book", columnList = "client_id,book_id")
+        @Index(name = "idx_client_book", columnList = "client_id,book_id"),
+        @Index(name = "idx_loan_date", columnList = "loanDate")
 })
 public class Loan {
     @Id

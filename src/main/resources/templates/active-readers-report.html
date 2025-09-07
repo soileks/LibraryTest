@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Active Readers Report</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+<div class="container">
+    <h1>👥 <span class="text-gradient">Active Readers Report</span></h1>
+
+    <div class="content-section">
+        <div th:if="${#lists.isEmpty(activeReaders)}" class="alert alert-info">
+            📝 No active readers found.
+        </div>
+
+        <div th:unless="${#lists.isEmpty(activeReaders)}">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Client Name</th>
+                    <th>Birth Date</th>
+                    <th>Book Title</th>
+                    <th>Author</th>
+                    <th>ISBN</th>
+                    <th>Loan Date</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="reader : ${activeReaders}">
+                    <td th:text="${reader.fullName}"></td>
+                    <td th:text="${#temporals.format(reader.birthDate, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${reader.bookTitle}"></td>
+                    <td th:text="${reader.bookAuthor}"></td>
+                    <td th:text="${reader.bookIsbn}"></td>
+                    <td th:text="${#temporals.format(reader.loanDate, 'yyyy-MM-dd')}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

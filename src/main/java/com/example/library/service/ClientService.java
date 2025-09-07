@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -27,10 +29,6 @@ public class ClientService {
         this.clientRepository = clientRepository;
     }
 
-    public List<Client> getAllClients() {
-        return clientRepository.findAll();
-    }
-
     public Optional<Client> getClientById(Long id) {
         return clientRepository.findById(id);
     }
@@ -43,17 +41,32 @@ public class ClientService {
         clientRepository.deleteById(id);
     }
 
-    public ClientSearchResult searchClients(String query, int page, int size) {
+    public ClientSearchResult searchClients(String query, String searchType, int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Client> clientPage;
 
-        if (!query.isEmpty()) {
-            clientPage = clientRepository.searchClients(query, pageable);
+        if (query != null && !query.trim().isEmpty()) {
+            switch (searchType != null ? searchType : "all") {
+                case "name":
+                    clientPage = clientRepository.findByFullName(query, pageable);
+                    break;
+                case "birthDate":
+                    try {
+                        LocalDate birthDate = LocalDate.parse(query);
+                        clientPage = clientRepository.findByBirthDate(birthDate, pageable);
+                    } catch (DateTimeParseException e) {
+                        clientPage = Page.empty(pageable);
+                    }
+                    break;
+                case "all":
+                default:
+                    clientPage = clientRepository.searchClients(query, pageable);
+                    break;
+            }
         } else {
             clientPage = clientRepository.findAll(pageable);
         }
 
-        // Генерация номеров страниц
         List<Integer> pageNumbers = Collections.emptyList();
         int totalPages = clientPage.getTotalPages();
         if (totalPages > 0) {

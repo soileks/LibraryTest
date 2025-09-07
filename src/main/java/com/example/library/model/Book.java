@@ -2,12 +2,13 @@ package com.example.library.model;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-
+import javax.validation.constraints.Pattern;
 
 @Entity
 @Table(name = "books", indexes = {
         @Index(name = "idx_isbn", columnList = "isbn"),
-        @Index(name = "idx_author", columnList = "author")
+        @Index(name = "idx_author", columnList = "author"),
+        @Index(name = "idx_title", columnList = "title")
 })
 public class Book {
     @Id
@@ -15,11 +16,13 @@ public class Book {
     private Long id;
 
     @NotBlank(message = "Title is required")
-    @Column(nullable = false, length = 500)
+    @Column(nullable = false, length = 300)
     private String title;
 
     @NotBlank(message = "Author is required")
     @Column(nullable = false, length = 300)
+    @Pattern(regexp = "^[\\p{L} \\-'’.]+$",
+            message = "Author name can only contain letters, spaces, hyphens, and apostrophes")
     private String author;
 
     @NotBlank(message = "ISBN is required")

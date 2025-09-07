@@ -22,9 +22,15 @@
 
     <div class="search-box">
         <form th:action="@{/books}" method="get" class="form-inline">
+            <select name="searchType" class="form-control">
+                <option value="all">All Fields</option>
+                <option value="title" th:selected="${searchType == 'title'}">Title</option>
+                <option value="author" th:selected="${searchType == 'author'}">Author</option>
+                <option value="isbn" th:selected="${searchType == 'isbn'}">ISBN</option>
+            </select>
             <input type="text" name="search" th:value="${searchQuery}"
-                   placeholder="Search by title, author or ISBN..."
-                   class="form-control">
+                   placeholder="Search books..." class="form-control">
+            <input type="hidden" name="size" th:value="${bookPage.size}">
             <button type="submit" class="btn btn-primary">🔍 Search</button>
             <a th:href="@{/books}" th:if="${searchQuery}" class="btn btn-secondary">❌ Clear</a>
         </form>

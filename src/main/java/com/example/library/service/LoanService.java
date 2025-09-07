@@ -1,20 +1,27 @@
 package com.example.library.service;
 
-import com.example.library.dto.ActiveReaderDto;
+import com.example.library.dto.*;
 import com.example.library.model.Book;
 import com.example.library.model.Client;
 import com.example.library.model.Loan;
 import com.example.library.repository.LoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+
 import com.example.library.mapper.LoanMapper;
+
+import java.time.format.DateTimeParseException;
+import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Service
 @Transactional
@@ -31,10 +38,6 @@ public class LoanService {
         this.bookService = bookService;
     }
 
-    public List<Loan> getAllLoans() {
-        return loanRepository.findAllWithClientAndBook();
-    }
-
     public void deleteLoan(Long id) {
         loanRepository.deleteById(id);
     }
@@ -44,18 +47,6 @@ public class LoanService {
                 .orElseThrow(() -> new IllegalArgumentException("Loan not found"));
         loan.setReturned(true);
         loanRepository.save(loan);
-    }
-
-    public List<Loan> getActiveLoans() {
-        return loanRepository.findByReturnedFalseWithClientAndBook();
-    }
-
-    public List<Client> getAvailableClients() {
-        return clientService.getAllClients();
-    }
-
-    public List<Book> getAvailableBooks() {
-        return bookService.getAllBooks();
     }
 
     public Loan createLoan(Long clientId, Long bookId, LocalDate loanDate) {
@@ -74,12 +65,85 @@ public class LoanService {
     }
 
     public List<ActiveReaderDto> getActiveReadersData() {
-        List<Loan> activeLoans = getActiveLoans();
+        List<Loan> activeLoans = loanRepository.findByReturnedFalseWithClientAndBook();
 
         return activeLoans.stream()
                 .map(LoanMapper::convertLoanToDto)
                 .collect(Collectors.toList());
     }
 
+    public LoanSearchResult searchLoans(String query, String searchType, int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Loan> loanPage;
 
+        if (query != null && !query.trim().isEmpty()) {
+            switch (searchType != null ? searchType : "all") {
+                case "client":
+                    loanPage = loanRepository.findByClientFullName(query, pageable);
+                    break;
+                case "bookTitle":
+                    loanPage = loanRepository.findByBookTitle(query, pageable);
+                    break;
+                case "bookAuthor":
+                    loanPage = loanRepository.findByBookAuthor(query, pageable);
+                    break;
+                case "isbn":
+                    loanPage = loanRepository.findByBookIsbn(query, pageable);
+                    break;
+                case "loanDate":
+                    try {
+                        LocalDate loanDate = LocalDate.parse(query);
+                        loanPage = loanRepository.findByLoanDate(loanDate, pageable);
+                    } catch (DateTimeParseException e) {
+                        loanPage = Page.empty(pageable);
+                    }
+                    break;
+                case "all":
+                default:
+                    loanPage = loanRepository.searchLoans(query, pageable);
+                    break;
+            }
+        } else {
+            loanPage = loanRepository.findAllWithPagination(pageable);
+        }
+
+        List<Integer> pageNumbers = Collections.emptyList();
+        int totalPages = loanPage.getTotalPages();
+        if (totalPages > 0) {
+            pageNumbers = IntStream.rangeClosed(1, totalPages)
+                    .boxed()
+                    .collect(Collectors.toList());
+        }
+
+        return new LoanSearchResult(loanPage.getContent(), loanPage, pageNumbers, query);
+    }
+
+    public LoanFormData getLoanFormData(String clientQuery, String bookQuery,
+                                        Long selectedClientId, Long selectedBookId) {
+
+        Client selectedClient = null;
+        Book selectedBook = null;
+        List<Client> clients = Collections.emptyList();
+        List<Book> books = Collections.emptyList();
+
+        if (selectedClientId != null) {
+            selectedClient = clientService.getClientById(selectedClientId).orElse(null);
+        }
+
+        if (selectedBookId != null) {
+            selectedBook = bookService.getBookById(selectedBookId).orElse(null);
+        }
+
+        if (clientQuery != null && !clientQuery.trim().isEmpty() && selectedClientId == null) {
+            ClientSearchResult clientResult = clientService.searchClients(clientQuery.trim(), "all", 1, 10);
+            clients = clientResult.getClients();
+        }
+
+        if (bookQuery != null && !bookQuery.trim().isEmpty() && selectedBookId == null) {
+            BookSearchResult bookResult = bookService.searchBooks(bookQuery.trim(), "all", 1, 10);
+            books = bookResult.getBooks();
+        }
+
+        return new LoanFormData(selectedClient, selectedBook, clients, books);
+    }
 }

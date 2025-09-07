@@ -8,14 +8,18 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client, Long> {
-
 
     @Query("SELECT c FROM Client c WHERE " +
             "LOWER(c.fullName) LIKE LOWER(CONCAT('%', :query, '%')) OR " +
             "CAST(c.birthDate AS string) LIKE CONCAT('%', :query, '%')")
     Page<Client> searchClients(@Param("query") String query, Pageable pageable);
+
+    Page<Client> findByFullName(String fullName, Pageable pageable);
+    Page<Client> findByBirthDate(LocalDate birthDate, Pageable pageable);
+
 
 }
