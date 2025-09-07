@@ -7,6 +7,7 @@ import com.example.library.model.Loan;
 import com.example.library.service.LoanService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -115,12 +116,13 @@ public class LoanController {
         return "redirect:/loans";
     }
 
-    //    @GetMapping("/active-readers")
-//    @ResponseBody
-//    public ResponseEntity<List<ActiveReaderDto>> getActiveReaders() {
-//        List<ActiveReaderDto> result = loanService.getActiveReadersData();
-//        return ResponseEntity.ok(result);
-//    }
+    @GetMapping("/json/active-readers")
+    @ResponseBody
+    public ResponseEntity<List<ActiveReaderDto>> getActiveReaders() {
+        List<ActiveReaderDto> result = loanService.getActiveReadersData();
+        return ResponseEntity.ok(result);
+    }
+
     @GetMapping("/active-readers")
     public String activeReadersReport(Model model) {
         List<ActiveReaderDto> activeReaders = loanService.getActiveReadersData();
