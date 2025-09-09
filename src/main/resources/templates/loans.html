@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
@@ -11,10 +9,6 @@
 <body>
 
 <div class="container">
-
-    <div th:if="${error}" class="alert alert-danger">
-        ⚠️ <span th:text="${error}"></span>
-    </div>
 
     <h1>📖 <span class="text-gradient">Loans Management</span></h1>
 
@@ -54,14 +48,14 @@
                 📝 No loans found for "<strong th:text="${searchQuery}"></strong>".
                 <a th:href="@{/loans}">Show all loans</a>
             </span>
-            <span th:unless="${searchQuery != null and !searchQuery.isEmpty()}">
+            <span th:unless="${!searchQuery.isEmpty()}">
                 📝 No loans found. <a th:href="@{/loans/new}">Create the first loan</a>
             </span>
         </div>
 
         <div th:unless="${#lists.isEmpty(loans)}">
             <!-- Информация о результатах поиска -->
-            <div th:if="${searchQuery != null and !searchQuery.isEmpty()}" class="alert alert-info">
+            <div th:if="${!searchQuery.isEmpty()}" class="alert alert-info">
                 🔍 Found <strong th:text="${loans.size()}"></strong> loans for: "<strong
                     th:text="${searchQuery}"></strong>"
                 <a th:href="@{/loans}" class="btn btn-secondary btn-sm">Show All Loans</a>
@@ -105,13 +99,13 @@
                 </tbody>
             </table>
             <div th:if="${loanPage.totalPages > 1}" class="pagination">
-    <span th:each="pageNumber : ${pageNumbers}">
-        <a th:if="${pageNumber != loanPage.number + 1}"
-           th:href="@{/loans(page=${pageNumber}, size=${loanPage.size}, search=${searchQuery})}"
-           th:text="${pageNumber}"></a>
-        <span th:unless="${pageNumber != loanPage.number + 1}"
-              th:text="${pageNumber}" class="current"></span>
-    </span>
+                <span th:each="pageNumber : ${pageNumbers}">
+                <a th:if="${pageNumber != loanPage.number + 1}"
+                th:href="@{/loans(page=${pageNumber}, size=${loanPage.size}, search=${searchQuery})}"
+                th:text="${pageNumber}"></a>
+                <span th:unless="${pageNumber != loanPage.number + 1}"
+                th:text="${pageNumber}" class="current"></span>
+                </span>
             </div>
         </div>
     </div>

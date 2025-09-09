@@ -11,9 +11,9 @@ public class LoanSearchResult {
     private String searchQuery;
     private Page<Loan> loanPage;
 
-    public LoanSearchResult(List<Loan> loans, Page<Loan> loanPage,
+    public LoanSearchResult(Page<Loan> loanPage,
                             List<Integer> pageNumbers, String searchQuery) {
-        this.loans = loans;
+        this.loans = loanPage.getContent();
         this.loanPage = loanPage;
         this.pageNumbers = pageNumbers;
         this.searchQuery = searchQuery;

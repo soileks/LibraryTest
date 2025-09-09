@@ -24,6 +24,7 @@ public class Loan {
     @JoinColumn(name = "book_id", nullable = false)
     private Book book;
 
+
     @NotNull(message = "Loan date is required")
     @Column(nullable = false)
     private LocalDate loanDate;

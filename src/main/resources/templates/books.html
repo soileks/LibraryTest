@@ -16,10 +16,6 @@
         <a th:href="@{/loans}" class="btn">📖 Loans</a>
     </div>
 
-    <div th:if="${message}" class="alert alert-success">
-        <span th:text="${message}"></span>
-    </div>
-
     <div class="search-box">
         <form th:action="@{/books}" method="get" class="form-inline">
             <select name="searchType" class="form-control">

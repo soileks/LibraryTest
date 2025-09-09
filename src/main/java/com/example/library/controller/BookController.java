@@ -12,8 +12,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-
-import java.util.Optional;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
 
 @Controller
@@ -29,23 +29,18 @@ public class BookController {
 
     @GetMapping
     public String listBooks(
-            @RequestParam("page") Optional<Integer> page,
-            @RequestParam("size") Optional<Integer> size,
-            @RequestParam("search") Optional<String> search,
-            @RequestParam("searchType") Optional<String> searchType,
+            @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+            @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(100) int size,
+            @RequestParam(value = "search", defaultValue = "") String searchQuery,
+            @RequestParam(value = "searchType", defaultValue = "all") String searchType,
             Model model) {
 
-        int currentPage = page.orElse(1);
-        int pageSize = size.orElse(10);
-        String searchQuery = search.orElse("");
-        String searchTypeValue = searchType.orElse("all");
-
-        BookSearchResult result = bookService.searchBooks(searchQuery, searchTypeValue, currentPage, pageSize);
+        BookSearchResult result = bookService.searchBooks(searchQuery, searchType, page, size);
 
         model.addAttribute("books", result.getBooks());
         model.addAttribute("bookPage", result.getBookPage());
-        model.addAttribute("searchQuery", result.getSearchQuery());
-        model.addAttribute("searchType", searchTypeValue);
+        model.addAttribute("searchQuery", searchQuery);
+        model.addAttribute("searchType", searchType);
         model.addAttribute("pageNumbers", result.getPageNumbers());
 
         return "books";

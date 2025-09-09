@@ -76,8 +76,8 @@ public class LoanService {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Loan> loanPage;
 
-        if (query != null && !query.trim().isEmpty()) {
-            switch (searchType != null ? searchType : "all") {
+        if (!query.trim().isEmpty()) {
+            switch (searchType) {
                 case "client":
                     loanPage = loanRepository.findByClientFullName(query, pageable);
                     break;
@@ -115,10 +115,11 @@ public class LoanService {
                     .collect(Collectors.toList());
         }
 
-        return new LoanSearchResult(loanPage.getContent(), loanPage, pageNumbers, query);
+        return new LoanSearchResult(loanPage, pageNumbers, query);
     }
 
-    public LoanFormData getLoanFormData(String clientQuery, String bookQuery,
+    public LoanFormData getLoanFormData(String clientQuery, String clientSearchType,
+                                        String bookQuery, String bookSearchType,
                                         Long selectedClientId, Long selectedBookId) {
 
         Client selectedClient = null;
@@ -134,13 +135,13 @@ public class LoanService {
             selectedBook = bookService.getBookById(selectedBookId).orElse(null);
         }
 
-        if (clientQuery != null && !clientQuery.trim().isEmpty() && selectedClientId == null) {
-            ClientSearchResult clientResult = clientService.searchClients(clientQuery.trim(), "all", 1, 10);
+        if (!clientQuery.trim().isEmpty() && selectedClientId == null) {
+            ClientSearchResult clientResult = clientService.searchClients(clientQuery.trim(), clientSearchType, 1, 10);
             clients = clientResult.getClients();
         }
 
-        if (bookQuery != null && !bookQuery.trim().isEmpty() && selectedBookId == null) {
-            BookSearchResult bookResult = bookService.searchBooks(bookQuery.trim(), "all", 1, 10);
+        if (!bookQuery.trim().isEmpty() && selectedBookId == null) {
+            BookSearchResult bookResult = bookService.searchBooks(bookQuery.trim(), bookSearchType, 1, 10);
             books = bookResult.getBooks();
         }
 

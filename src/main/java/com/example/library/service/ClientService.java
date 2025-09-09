@@ -45,8 +45,8 @@ public class ClientService {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Client> clientPage;
 
-        if (query != null && !query.trim().isEmpty()) {
-            switch (searchType != null ? searchType : "all") {
+        if (!query.trim().isEmpty()) {
+            switch (searchType) {
                 case "name":
                     clientPage = clientRepository.findByFullName(query, pageable);
                     break;
@@ -75,7 +75,7 @@ public class ClientService {
                     .collect(Collectors.toList());
         }
 
-        return new ClientSearchResult(clientPage.getContent(), clientPage, pageNumbers, query);
+        return new ClientSearchResult(clientPage, pageNumbers, query);
     }
 
 }

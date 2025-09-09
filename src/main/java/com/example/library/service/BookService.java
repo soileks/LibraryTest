@@ -28,7 +28,6 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-
     public Optional<Book> getBookById(Long id) {
         return bookRepository.findById(id);
     }
@@ -41,8 +40,8 @@ public class BookService {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Book> bookPage;
 
-        if (query != null && !query.trim().isEmpty()) {
-            switch (searchType != null ? searchType : "all") {
+        if (!query.trim().isEmpty()) {
+            switch (searchType) {
                 case "title":
                     bookPage = bookRepository.findByTitle(query, pageable);
                     break;
@@ -69,7 +68,7 @@ public class BookService {
                     .collect(Collectors.toList());
         }
 
-        return new BookSearchResult(bookPage.getContent(), bookPage, pageNumbers, query);
+        return new BookSearchResult(bookPage, pageNumbers, query);
     }
 
     public void validateBookIsbn(Book book) {

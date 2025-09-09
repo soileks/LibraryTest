@@ -11,9 +11,9 @@ public class BookSearchResult {
     private List<Integer> pageNumbers;
     private String searchQuery;
 
-    public BookSearchResult(List<Book> books, Page<Book> bookPage,
+    public BookSearchResult(Page<Book> bookPage,
                             List<Integer> pageNumbers, String searchQuery) {
-        this.books = books;
+        this.books = bookPage.getContent();
         this.bookPage = bookPage;
         this.pageNumbers = pageNumbers;
         this.searchQuery = searchQuery;

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
@@ -16,39 +15,44 @@
             <a th:href="@{/loans}" class="btn btn-secondary">← Back to Loans</a>
         </div>
 
-        <!-- Секция выбора клиента -->
         <div class="selection-section">
             <h3>👤 Step 1: Select Client</h3>
 
-            <!-- Выбранный клиент -->
             <div th:if="${selectedClient != null}" class="selected-item">
                 <div>
                     <strong th:text="${selectedClient.fullName}"></strong>
                     <div th:text="'Birth date: ' + ${#temporals.format(selectedClient.birthDate, 'yyyy-MM-dd')}"></div>
                 </div>
                 <div class="selection-actions">
-                    <a th:href="@{/loans/new(selectedBookId=${selectedBookId})}"
+                    <a th:href="@{/loans/new(selectedBookId=${selectedBookId}, bookQuery=${bookQuery}, bookSearchType=${bookSearchType})}"
                        class="btn btn-secondary btn-sm">Change Client</a>
                 </div>
             </div>
 
-            <!-- Поиск клиента -->
             <div th:unless="${selectedClient != null}">
                 <div class="search-box">
                     <form th:action="@{/loans/new}" method="get" class="form-inline">
                         <input type="hidden" name="selectedBookId" th:value="${selectedBookId}">
+                        <input type="hidden" name="bookQuery" th:value="${bookQuery}">
+                        <input type="hidden" name="bookSearchType" th:value="${bookSearchType}">
+
+                        <select name="clientSearchType" class="form-control">
+                            <option value="all" th:selected="${clientSearchType == 'all'}">All Fields</option>
+                            <option value="name" th:selected="${clientSearchType == 'name'}">By Name</option>
+                            <option value="birthDate" th:selected="${clientSearchType == 'birthDate'}">By Birth Date</option>
+                        </select>
+
                         <input type="text" name="clientQuery" th:value="${clientQuery}"
-                               placeholder="Search client by name..." class="form-control">
+                               placeholder="Search client..." class="form-control">
                         <button type="submit" class="btn btn-primary">🔍 Search Client</button>
                     </form>
                 </div>
 
-                <!-- Результаты поиска клиентов -->
-                <div th:if="${clientQuery != null and !clientQuery.isEmpty()}" class="search-results">
+                <div th:if="${!clientQuery.isEmpty()}" class="search-results">
                     <h4>Search Results:</h4>
                     <div th:if="${clients != null and !clients.empty}">
                         <div th:each="client : ${clients}" class="result-item">
-                            <a th:href="@{/loans/new(selectedClientId=${client.id}, selectedBookId=${selectedBookId})}"
+                            <a th:href="@{/loans/new(selectedClientId=${client.id}, selectedBookId=${selectedBookId}, bookQuery=${bookQuery}, bookSearchType=${bookSearchType}, clientQuery=${clientQuery}, clientSearchType=${clientSearchType})}"
                                style="text-decoration: none; color: inherit; display: block;">
                                 <span th:text="${client.fullName + ' (' + #temporals.format(client.birthDate, 'yyyy-MM-dd') + ')'}"></span>
                             </a>
@@ -61,39 +65,45 @@
             </div>
         </div>
 
-        <!-- Секция выбора книги -->
         <div class="selection-section">
             <h3>📚 Step 2: Select Book</h3>
 
-            <!-- Выбранная книга -->
             <div th:if="${selectedBook != null}" class="selected-item">
                 <div>
                     <strong th:text="${selectedBook.title}"></strong>
                     <div th:text="'by ' + ${selectedBook.author} + ' (ISBN: ' + ${selectedBook.isbn} + ')'"></div>
                 </div>
                 <div class="selection-actions">
-                    <a th:href="@{/loans/new(selectedClientId=${selectedClientId})}"
+                    <a th:href="@{/loans/new(selectedClientId=${selectedClientId}, clientQuery=${clientQuery}, clientSearchType=${clientSearchType})}"
                        class="btn btn-secondary btn-sm">Change Book</a>
                 </div>
             </div>
 
-            <!-- Поиск книги -->
             <div th:unless="${selectedBook != null}">
                 <div class="search-box">
                     <form th:action="@{/loans/new}" method="get" class="form-inline">
                         <input type="hidden" name="selectedClientId" th:value="${selectedClientId}">
+                        <input type="hidden" name="clientQuery" th:value="${clientQuery}">
+                        <input type="hidden" name="clientSearchType" th:value="${clientSearchType}">
+
+                        <select name="bookSearchType" class="form-control">
+                            <option value="all" th:selected="${bookSearchType == 'all'}">All Fields</option>
+                            <option value="title" th:selected="${bookSearchType == 'title'}">By Title</option>
+                            <option value="author" th:selected="${bookSearchType == 'author'}">By Author</option>
+                            <option value="isbn" th:selected="${bookSearchType == 'isbn'}">By ISBN</option>
+                        </select>
+
                         <input type="text" name="bookQuery" th:value="${bookQuery}"
-                               placeholder="Search book by title, author or ISBN..." class="form-control">
+                               placeholder="Search book..." class="form-control">
                         <button type="submit" class="btn btn-primary">🔍 Search Book</button>
                     </form>
                 </div>
 
-                <!-- Результаты поиска книг -->
-                <div th:if="${bookQuery != null and !bookQuery.isEmpty()}" class="search-results">
+                <div th:if="${!bookQuery.isEmpty()}" class="search-results">
                     <h4>Search Results:</h4>
                     <div th:if="${books != null and !books.empty}">
                         <div th:each="book : ${books}" class="result-item">
-                            <a th:href="@{/loans/new(selectedBookId=${book.id}, selectedClientId=${selectedClientId})}"
+                            <a th:href="@{/loans/new(selectedBookId=${book.id}, selectedClientId=${selectedClientId}, clientQuery=${clientQuery}, clientSearchType=${clientSearchType}, bookQuery=${bookQuery}, bookSearchType=${bookSearchType})}"
                                style="text-decoration: none; color: inherit; display: block;">
                                 <span th:text="${book.title + ' by ' + book.author + ' (' + book.isbn + ')'}"></span>
                             </a>
@@ -106,7 +116,6 @@
             </div>
         </div>
 
-        <!-- Форма создания займа -->
         <div th:if="${selectedClient != null and selectedBook != null}" class="selection-section">
             <h3>📅 Step 3: Create Loan</h3>
 

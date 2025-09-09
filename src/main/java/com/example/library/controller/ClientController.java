@@ -11,8 +11,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/clients")
@@ -27,23 +28,19 @@ public class ClientController {
 
     @GetMapping
     public String listClients(
-            @RequestParam("page") Optional<Integer> page,
-            @RequestParam("size") Optional<Integer> size,
-            @RequestParam("search") Optional<String> search,
-            @RequestParam("searchType") Optional<String> searchType,
+            @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+            @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(100) int size,
+            @RequestParam(value = "search", defaultValue = "") String searchQuery,
+            @RequestParam(value = "searchType", defaultValue = "all") String searchType,
             Model model) {
 
-        int currentPage = page.orElse(1);
-        int pageSize = size.orElse(10);
-        String searchQuery = search.orElse("");
-        String searchTypeValue = searchType.orElse("all");
 
-        ClientSearchResult result = clientService.searchClients(searchQuery, searchTypeValue, currentPage, pageSize);
+        ClientSearchResult result = clientService.searchClients(searchQuery, searchType, page, size);
 
         model.addAttribute("clients", result.getClients());
         model.addAttribute("clientPage", result.getClientPage());
-        model.addAttribute("searchQuery", result.getSearchQuery());
-        model.addAttribute("searchType", searchTypeValue);
+        model.addAttribute("searchQuery", searchQuery);
+        model.addAttribute("searchType", searchType);
         model.addAttribute("pageNumbers", result.getPageNumbers());
 
         return "clients";

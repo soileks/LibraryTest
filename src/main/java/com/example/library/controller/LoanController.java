@@ -12,9 +12,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Controller
 @RequestMapping("/loans")
@@ -27,69 +28,55 @@ public class LoanController {
         this.loanService = loanService;
     }
 
-    //    @GetMapping
-//    public String listLoans(Model model) {
-//        List<Loan> loans = loanService.getAllLoans();
-//        model.addAttribute("loans", loans);
-//        return "loans";
-//    }
     @GetMapping
     public String listLoans(
-            @RequestParam("page") Optional<Integer> page,
-            @RequestParam("size") Optional<Integer> size,
-            @RequestParam("search") Optional<String> search,
-            @RequestParam("searchType") Optional<String> searchType,
+            @RequestParam(value = "page", defaultValue = "1") @Min(1) int page,
+            @RequestParam(value = "size", defaultValue = "10") @Min(1) @Max(100) int size,
+            @RequestParam(value = "search", defaultValue = "") String searchQuery,
+            @RequestParam(value = "searchType", defaultValue = "all") String searchType,
             Model model) {
 
-        int currentPage = page.orElse(1);
-        int pageSize = size.orElse(10);
-        String searchQuery = search.orElse("");
-        String searchTypeValue = searchType.orElse("all");
-
-        LoanSearchResult result = loanService.searchLoans(searchQuery, searchTypeValue, currentPage, pageSize);
+        LoanSearchResult result = loanService.searchLoans(searchQuery, searchType, page, size);
 
         model.addAttribute("loans", result.getLoans());
         model.addAttribute("loanPage", result.getLoanPage());
-        model.addAttribute("searchQuery", result.getSearchQuery());
+        model.addAttribute("searchQuery", searchQuery);
         model.addAttribute("pageNumbers", result.getPageNumbers());
-        model.addAttribute("searchType", searchTypeValue);
+        model.addAttribute("searchType", searchType);
 
         return "loans";
     }
 
-
-    //    @GetMapping("/new")
-//    public String showLoanForm(Model model) {
-//        model.addAttribute("loan", new Loan());
-//        model.addAttribute("clients", loanService.getAvailableClients());
-//        model.addAttribute("books", loanService.getAvailableBooks());
-//        return "loan-form";
-//    }
     @GetMapping("/new")
     public String showLoanForm(
-            @RequestParam("clientQuery") Optional<String> clientQuery,
-            @RequestParam("bookQuery") Optional<String> bookQuery,
-            @RequestParam("selectedClientId") Optional<Long> selectedClientId,
-            @RequestParam("selectedBookId") Optional<Long> selectedBookId,
+            @RequestParam(value = "clientQuery", defaultValue = "") String clientQuery,
+            @RequestParam(value = "clientSearchType", defaultValue = "all") String clientSearchType,
+            @RequestParam(value = "bookQuery", defaultValue = "") String bookQuery,
+            @RequestParam(value = "bookSearchType", defaultValue = "all") String bookSearchType,
+            @RequestParam(value = "selectedClientId", required = false) Long selectedClientId,
+            @RequestParam(value = "selectedBookId", required = false) Long selectedBookId,
             Model model) {
 
-        model.addAttribute("loan", new Loan());
-        model.addAttribute("clientQuery", clientQuery.orElse(""));
-        model.addAttribute("bookQuery", bookQuery.orElse(""));
+        model.addAttribute("clientQuery", clientQuery);
+        model.addAttribute("clientSearchType", clientSearchType);
+        model.addAttribute("bookQuery", bookQuery);
+        model.addAttribute("bookSearchType", bookSearchType);
 
         LoanFormData formData = loanService.getLoanFormData(
-                clientQuery.orElse(""),
-                bookQuery.orElse(""),
-                selectedClientId.orElse(null),
-                selectedBookId.orElse(null)
+                clientQuery,
+                clientSearchType,
+                bookQuery,
+                bookSearchType,
+                selectedClientId,
+                selectedBookId
         );
 
         model.addAttribute("selectedClient", formData.getSelectedClient());
         model.addAttribute("selectedBook", formData.getSelectedBook());
         model.addAttribute("clients", formData.getClients());
         model.addAttribute("books", formData.getBooks());
-        model.addAttribute("selectedClientId", selectedClientId.orElse(null));
-        model.addAttribute("selectedBookId", selectedBookId.orElse(null));
+        model.addAttribute("selectedClientId", selectedClientId);
+        model.addAttribute("selectedBookId", selectedBookId);
 
         return "loan-form";
     }

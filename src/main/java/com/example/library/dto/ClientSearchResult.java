@@ -11,9 +11,9 @@ public class ClientSearchResult {
     private List<Integer> pageNumbers;
     private String searchQuery;
 
-    public ClientSearchResult(List<Client> clients, Page<Client> clientPage,
+    public ClientSearchResult(Page<Client> clientPage,
                               List<Integer> pageNumbers, String searchQuery) {
-        this.clients = clients;
+        this.clients = clientPage.getContent();
         this.clientPage = clientPage;
         this.pageNumbers = pageNumbers;
         this.searchQuery = searchQuery;
