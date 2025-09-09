@@ -23,12 +23,13 @@
                     <strong th:text="${selectedClient.fullName}"></strong>
                     <div th:text="'Birth date: ' + ${#temporals.format(selectedClient.birthDate, 'yyyy-MM-dd')}"></div>
                 </div>
+<!--    По кнопке изменения очищаем параметры клиента, оставляя параметры книги-->
                 <div class="selection-actions">
                     <a th:href="@{/loans/new(selectedBookId=${selectedBookId}, bookQuery=${bookQuery}, bookSearchType=${bookSearchType})}"
                        class="btn btn-secondary btn-sm">Change Client</a>
                 </div>
             </div>
-
+<!--            Если клиент не выбран, то поиск-->
             <div th:unless="${selectedClient != null}">
                 <div class="search-box">
                     <form th:action="@{/loans/new}" method="get" class="form-inline">
@@ -50,7 +51,7 @@
 
                 <div th:if="${!clientQuery.isEmpty()}" class="search-results">
                     <h4>Search Results:</h4>
-                    <div th:if="${clients != null and !clients.empty}">
+                    <div th:if="${clients != null and !clients.isEmpty()}">
                         <div th:each="client : ${clients}" class="result-item">
                             <a th:href="@{/loans/new(selectedClientId=${client.id}, selectedBookId=${selectedBookId}, bookQuery=${bookQuery}, bookSearchType=${bookSearchType}, clientQuery=${clientQuery}, clientSearchType=${clientSearchType})}"
                                style="text-decoration: none; color: inherit; display: block;">
@@ -58,7 +59,7 @@
                             </a>
                         </div>
                     </div>
-                    <div th:if="${clients != null and clients.empty}" class="alert alert-info">
+                    <div th:if="${clients != null and clients.isEmpty()}" class="alert alert-info">
                         📝 No clients found for "<strong th:text="${clientQuery}"></strong>"
                     </div>
                 </div>
@@ -101,7 +102,7 @@
 
                 <div th:if="${!bookQuery.isEmpty()}" class="search-results">
                     <h4>Search Results:</h4>
-                    <div th:if="${books != null and !books.empty}">
+                    <div th:if="${books != null and !books.isEmpty()}">
                         <div th:each="book : ${books}" class="result-item">
                             <a th:href="@{/loans/new(selectedBookId=${book.id}, selectedClientId=${selectedClientId}, clientQuery=${clientQuery}, clientSearchType=${clientSearchType}, bookQuery=${bookQuery}, bookSearchType=${bookSearchType})}"
                                style="text-decoration: none; color: inherit; display: block;">
@@ -109,7 +110,7 @@
                             </a>
                         </div>
                     </div>
-                    <div th:if="${books != null and books.empty}" class="alert alert-info">
+                    <div th:if="${books != null and books.isEmpty()}" class="alert alert-info">
                         📝 No books found for "<strong th:text="${bookQuery}"></strong>"
                     </div>
                 </div>
